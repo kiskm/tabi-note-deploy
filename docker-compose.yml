@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: tabi_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tabi_note
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tabi_user -d tabi_note"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./tabi-note-api
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: tabi_user
+      DB_PASSWORD: password
+      DB_NAME: tabi_note
+    depends_on:
+      db:
+        condition: service_healthy
+
+  front:
+    build: ./tabi-note-front
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  db_data:
