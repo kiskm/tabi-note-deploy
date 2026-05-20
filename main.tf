@@ -1,19 +1,31 @@
-provider "aws" {
-  profile = "terraform"
-  region = "ca-central-1"
+# ------------------------------
+# Terraform configuration
+# ------------------------------
+terraform {
+  required_version = ">=1.15.3"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~>6.45.0"
+    }
+  }
 }
 
-resource "aws_instance" "tabi-note" {
-  ami = "ami-0344a23c782460e34"
-  instance_type = "t2.micro"
+# ------------------------------
+# Provider
+# ------------------------------
+provider "aws" {
+  profile = "terraform"
+  region  = "ca-central-1"
+}
 
-  tags = {
-    Name = "tabi-note"
-  }
+# ------------------------------
+# Variables
+# ------------------------------
+variable "project" {
+  type = string
+}
 
-  user_data = <<EOF
-#!/bin/bash
-amazon-linux-extras install -y nginx1.12
-systemctl start nginx
-EOF
+variable "environment" {
+  type = string
 }
