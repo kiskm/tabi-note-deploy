@@ -16,8 +16,7 @@ terraform {
 # Provider
 # ------------------------------
 provider "aws" {
-  profile = "terraform"
-  region  = "ca-central-1"
+  region = "ca-central-1"
 }
 
 # ------------------------------
