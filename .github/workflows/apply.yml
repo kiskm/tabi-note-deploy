@@ -13,6 +13,9 @@ jobs:
     name: Apply
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_project: ${{ vars.TF_VAR_project }}
+      TF_VAR_environment: ${{ vars.TF_VAR_environment }}
 
     steps:
       - name: Checkout
@@ -34,4 +37,4 @@ jobs:
         run: terraform init -input=false -upgrade=false
 
       - name: Terraform Apply
-        run: terraform apply -input=false -auto-approve -var-file="terraform.tfvars"
+        run: terraform apply -input=false -auto-approve

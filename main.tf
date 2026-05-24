@@ -1,4 +1,4 @@
-# GitHub Actions test
+# GitHub Actions test 3
 # ------------------------------
 # Terraform configuration
 # ------------------------------
@@ -16,8 +16,7 @@ terraform {
 # Provider
 # ------------------------------
 provider "aws" {
-  profile = "terraform"
-  region  = "ca-central-1"
+  region = "ca-central-1"
 }
 
 # ------------------------------
