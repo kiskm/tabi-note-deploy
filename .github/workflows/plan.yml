@@ -1,4 +1,3 @@
-# GitHub Actions test
 name: Terraform
 
 on:

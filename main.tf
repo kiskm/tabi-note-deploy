@@ -1,3 +1,4 @@
+# GitHub Actions test
 # ------------------------------
 # Terraform configuration
 # ------------------------------
@@ -29,3 +30,14 @@ variable "project" {
 variable "environment" {
   type = string
 }
+
+# ------------------------------
+# S3 Remote State
+# ------------------------------
+# terraform {
+#   backend "s3" {
+#     bucket = "your-tfstate-bucket"
+#     key    = "tabi-note/terraform.tfstate"
+#     region = "ca-central-1"
+#   }
+# }
