@@ -1,3 +1,6 @@
+# ------------------------------
+# AMI
+# ------------------------------
 data "aws_ami" "app" {
   most_recent = true
   owners      = ["self", "amazon"]
@@ -14,4 +17,11 @@ data "aws_ami" "app" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
+}
+
+# ------------------------------
+# My IP
+# ------------------------------
+data "http" "my_ip" {
+  url = "https://api.ipify.org?format=json"
 }

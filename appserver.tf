@@ -27,6 +27,13 @@ resource "aws_instance" "app_server" {
 
   user_data = <<-EOF
   #!/bin/bash
+  # Error handling
+  set -euxo pipefail
+  exec > >(tee /var/log/user-data.log) 2>&1
+
+  # Start declaration
+  echo "[UserData] Start: $(date '+%F %T')"
+
   # Docker installation
   dnf install -y docker git
   systemctl start docker
@@ -59,6 +66,8 @@ resource "aws_instance" "app_server" {
   # Build
   docker compose up --build -d
 
+  # End declaration
+  echo "[UserData] Done : $(date '+%F %T')"
   EOF
 
   tags = {

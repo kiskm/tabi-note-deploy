@@ -1,15 +1,4 @@
 # ------------------------------
-# My IP
-# ------------------------------
-data "http" "my_ip" {
-  url = "https://api.ipify.org?format=json"
-}
-
-locals {
-  my_ip = "${jsondecode(data.http.my_ip.response_body)["ip"]}/32"
-}
-
-# ------------------------------
 # Security Group
 # ------------------------------
 resource "aws_security_group" "web-sg" {
