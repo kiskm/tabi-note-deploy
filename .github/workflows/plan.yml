@@ -15,6 +15,9 @@ jobs:
   plan:
     name: Plan
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_project: ${{ vars.TF_VAR_project }}
+      TF_VAR_environment: ${{ vars.TF_VAR_environment }}
 
     steps:
       - name: Checkout
@@ -49,7 +52,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var-file="terraform.tfvars" -no-color
+        run: terraform plan -no-color
         continue-on-error: true
 
       - name: Comment

@@ -1,4 +1,4 @@
-# GitHub Actions test
+# GitHub Actions test 2
 # ------------------------------
 # Terraform configuration
 # ------------------------------
