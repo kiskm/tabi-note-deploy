@@ -17,7 +17,7 @@ resource "aws_key_pair" "keypair" {
 # ------------------------------
 resource "aws_instance" "app_server" {
   ami                         = data.aws_ami.app.id
-  instance_type               = "t3.micro"
+  instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnet_1a.id
   associate_public_ip_address = true
   vpc_security_group_ids = [
@@ -44,9 +44,11 @@ resource "aws_instance" "app_server" {
 
   # Git clone
   cd /home/ec2-user
+  git clone https://github.com/kiskm/tabi-note-deploy.git
+  cd tabi-note-deploy
   git clone https://github.com/kiskm/tabi-note-api.git
   git clone https://github.com/kiskm/tabi-note-front.git
-  git clone https://github.com/kiskm/tabi-note-deploy.git
+
   
   # Add swap
   dd if=/dev/zero of=/swapfile bs=128M count=16
@@ -55,9 +57,6 @@ resource "aws_instance" "app_server" {
   swapon /swapfile
 
   # Build
-  sed -i 's|build: ./tabi-note-api|build: ../tabi-note-api|' ~/tabi-note-deploy/docker-compose.yml
-  sed -i 's|build: ./tabi-note-front|build: ../tabi-note-front|' ~/tabi-note-deploy/docker-compose.yml
-  cd /home/ec2-user/tabi-note-deploy
   docker compose up --build -d
 
   EOF
