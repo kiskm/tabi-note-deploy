@@ -2,8 +2,8 @@
 tabi-note-api/
 tabi-note-front/
 
-# キーペア用ディレクトリ
-src/
+# 秘密鍵（公開鍵 .pub はコミット対象）
+src/tabi-note-dev-keypair
 
 # Created by https://www.toptal.com/developers/gitignore/api/terraform
 # Edit at https://www.toptal.com/developers/gitignore?templates=terraform
