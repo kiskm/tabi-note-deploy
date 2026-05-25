@@ -71,7 +71,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sleep 30
-            docker compose -f /home/ec2-user/tabi-note-deploy/docker-compose.yml ps | grep "running"
+            docker compose -f /home/ec2-user/tabi-note-deploy/docker-compose.yml ps | grep "Up"
 
       - name: Revoke security group
         run: |
