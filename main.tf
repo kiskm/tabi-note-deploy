@@ -10,6 +10,11 @@ terraform {
       version = "~>6.45.0"
     }
   }
+  backend "s3" {
+    bucket = "tabi-note-tfstate"
+    key    = "tabi-note/terraform.tfstate"
+    region = "ca-central-1"
+  }
 }
 
 # ------------------------------
@@ -30,13 +35,3 @@ variable "environment" {
   type = string
 }
 
-# ------------------------------
-# S3 Remote State
-# ------------------------------
-# terraform {
-#   backend "s3" {
-#     bucket = "your-tfstate-bucket"
-#     key    = "tabi-note/terraform.tfstate"
-#     region = "ca-central-1"
-#   }
-# }
