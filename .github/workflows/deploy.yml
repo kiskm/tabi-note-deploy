@@ -1,0 +1,58 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker-compose.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Get EC2 public IP
+        id: ec2
+        run: |
+          IP=$(aws ec2 describe-instances \
+            --filters \
+              "Name=tag:Name,Values=tabi-note-dev-app-ec2" \
+              "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].PublicIpAddress" \
+            --output text)
+          echo "ip=$IP" >> $GITHUB_OUTPUT
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ steps.ec2.outputs.ip }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd /home/ec2-user/tabi-note-deploy
+            git pull
+            cd tabi-note-api && git pull && cd ..
+            cd tabi-note-front && git pull && cd ..
+            docker compose build api
+            docker compose build front
+            docker compose up -d
+
+      - name: Health check
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ steps.ec2.outputs.ip }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sleep 30
+            docker compose -f /home/ec2-user/tabi-note-deploy/docker-compose.yml ps | grep "running"
