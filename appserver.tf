@@ -64,7 +64,9 @@ resource "aws_instance" "app_server" {
   swapon /swapfile
 
   # Build
-  docker compose up --build -d
+  docker compose build api
+  docker compose build front
+  docker compose up -d
 
   # End declaration
   echo "[UserData] Done : $(date '+%F %T')"
