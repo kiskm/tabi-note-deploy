@@ -42,7 +42,9 @@ jobs:
             --query "SecurityGroups[0].GroupId" \
             --output text)
           echo "sg_id=$SG_ID" >> $GITHUB_OUTPUT
-          aws ec2 authorize-security-group-ingress --group-id ${{ steps.network.outputs.sg_id }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          aws ec2 authorize-security-group-ingress \
+            --group-id $SG_ID --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
@@ -71,4 +73,7 @@ jobs:
             docker compose -f /home/ec2-user/tabi-note-deploy/docker-compose.yml ps | grep "running"
 
       - name: Revoke security group
-        run: aws ec2 revoke-security-group-ingress --group-id ${{ steps.network.outputs.sg_id }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: |
+          aws ec2 revoke-security-group-ingress \
+          --group-id ${{ steps.network.outputs.sg_id }} \
+          --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
