@@ -55,8 +55,8 @@ resource "aws_instance" "app_server" {
   cd tabi-note-deploy
   git clone https://github.com/kiskm/tabi-note-api.git
   git clone https://github.com/kiskm/tabi-note-front.git
+  chown -R ec2-user:ec2-user /home/ec2-user
 
-  
   # Add swap
   dd if=/dev/zero of=/swapfile bs=128M count=16
   chmod 600 /swapfile
