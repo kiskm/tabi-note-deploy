@@ -21,7 +21,7 @@ jobs:
           aws-region: ca-central-1
 
       - name: Start EC2 instance
-        runs: |
+        run: |
           INSTANCE_ID=$(aws ec2 describe-instances \
             --filters \
               "Name=tag:Name, Values=tabi-note-dev-app-ec2" \
