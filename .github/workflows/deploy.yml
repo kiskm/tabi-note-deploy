@@ -20,6 +20,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
+      - name: Start EC2 instance
+        runs: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters \
+              "Name=tag:Name, Values=tabi-note-dev-app-ec2" \
+            --query "Reservations[0].Instances[0].InstanceId" \
+            --output text)
+          aws ec2 start-instances --instance-ids $INSTANCE_ID
+          aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+
       - name: Get EC2 public IP
         id: ec2
         run: |
