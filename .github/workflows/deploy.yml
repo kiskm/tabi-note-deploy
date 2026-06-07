@@ -88,3 +88,6 @@ jobs:
           aws ec2 revoke-security-group-ingress \
           --group-id ${{ steps.sg.outputs.sg_id }} \
           --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Show app URL
+        run: echo "http://${{ steps.ec2.outputs.ip }}:3000"
