@@ -7,7 +7,7 @@ resource "aws_iam_openid_connect_provider" "github_actions" {
   thumbprint_list = [
     "6938fd4d98bab03faadb97b34396831e3780aea1",
     "1c58a3a8518e8759bf075b76b750d4f2df264fcd",
-    ]
+  ]
 
   tags = {
     Name    = "${var.project}-github-actions-oidc"
@@ -78,8 +78,90 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
 }
 
 # ------------------------------
+# IAM Role (assumed by GitHub Actions, for terraform plan)
+# ------------------------------
+data "aws_iam_policy_document" "github_actions_plan_trust" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github_actions.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values = [
+        "repo:kiskm/tabi-note-deploy:ref:refs/heads/main",
+        "repo:kiskm/tabi-note-deploy:pull_request",
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "github_actions_plan" {
+  name               = "${var.project}-${var.environment}-github-actions-plan"
+  assume_role_policy = data.aws_iam_policy_document.github_actions_plan_trust.json
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-github-actions-plan"
+    Project = var.project
+    Env     = var.environment
+  }
+}
+
+# ------------------------------
+# IAM Policy (permissions used by plan.yml)
+# ------------------------------
+data "aws_iam_policy_document" "github_actions_plan_permissions" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:Describe*",
+      "iam:Get*",
+      "iam:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = ["arn:aws:s3:::tabi-note-tfstate"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = ["arn:aws:s3:::tabi-note-tfstate/tabi-note/terraform.tfstate"]
+  }
+}
+
+resource "aws_iam_role_policy" "github_actions_plan" {
+  name   = "${var.project}-${var.environment}-github-actions-plan"
+  role   = aws_iam_role.github_actions_plan.id
+  policy = data.aws_iam_policy_document.github_actions_plan_permissions.json
+}
+
+# ------------------------------
 # Output
 # ------------------------------
 output "github_actions_role_arn" {
   value = aws_iam_role.github_actions_deploy.arn
+}
+
+output "github_actions_plan_role_arn" {
+  value = aws_iam_role.github_actions_plan.arn
 }
