@@ -79,3 +79,21 @@ resource "aws_instance" "app_server" {
     Type    = "app"
   }
 }
+
+# ------------------------------
+# Elastic IP
+# ------------------------------
+resource "aws_eip" "app" {
+  domain   = "vpc"
+  instance = aws_instance.app_server.id
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-app-eip"
+    Project = var.project
+    Env     = var.environment
+  }
+}
+
+output "app_public_ip" {
+  value = aws_eip.app.public_ip
+}

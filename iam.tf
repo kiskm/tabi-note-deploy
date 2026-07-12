@@ -133,6 +133,8 @@ data "aws_iam_policy_document" "github_actions_plan_permissions" {
       "ec2:Describe*",
       "iam:Get*",
       "iam:List*",
+      "cloudfront:Get*",
+      "cloudfront:List*",
     ]
     resources = ["*"]
   }
@@ -205,6 +207,12 @@ data "aws_iam_policy_document" "github_actions_apply_permissions" {
   statement {
     effect    = "Allow"
     actions   = ["ec2:*"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["cloudfront:*"]
     resources = ["*"]
   }
 
